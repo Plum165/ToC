@@ -3,14 +3,22 @@ export const limitModule = {
     id: 'lim',
     title: 'Limitations of Algorithmic Power',
     subtopics: [
+        /* --- ORIGINAL TOPICS --- */
         { id: 'lim-countability', title: 'Countability & Infinity' },
         { id: 'lim-diagonal', title: 'Cantor\'s Diagonalization' },
         { id: 'lim-decidable', title: 'Decidable vs. Acceptable' },
         { id: 'lim-halting', title: 'The Halting Problem' },
-        { id: 'lim-church', title: 'Church-Turing Thesis' },
+        
+        /* --- EFFICIENCY & COMPLEXITY --- */
         { id: 'lim-efficiency', title: 'Analysis of Algorithms' },
         { id: 'lim-tractability', title: 'Tractable vs. Intractable' },
-        { id: 'lim-types', title: 'Decision vs. Optimization' }
+        { id: 'lim-types', title: 'Decision vs. Optimization' },
+
+        /* --- NEW TOPICS FROM LATEST PDF --- */
+        { id: 'lim-lowerbounds', title: 'Lower Bounds & Gaps' },
+        { id: 'lim-adversary', title: 'Adversary Arguments' }
+
+        
     ],
     content: {
         'lim-countability': {
@@ -475,6 +483,131 @@ export const limitModule = {
                     <p class="text-sm text-center opacity-60 italic">
                         "If we could solve the decision problem efficiently, we could solve the optimization problem efficiently (using binary search on k)."
                     </p>
+                </div>
+            `
+        },
+        'lim-lowerbounds': {
+            title: 'Lower Bounds & Algorithmic Gaps',
+            html: `
+                <div class="space-y-8">
+                    <!-- DEFINITIONS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-blue-900/10 border-l-4 border-blue-500 p-4 rounded">
+                            <h4 class="font-bold text-blue-400">Upper Bound (Algorithm)</h4>
+                            <p class="text-sm opacity-80">The worst-case complexity of the <em>best known algorithm</em>.</p>
+                            <p class="text-xs mt-2 text-blue-300">"We know it's possible to solve it this fast."</p>
+                        </div>
+                        <div class="bg-red-900/10 border-l-4 border-red-500 p-4 rounded">
+                            <h4 class="font-bold text-red-400">Lower Bound (Problem)</h4>
+                            <p class="text-sm opacity-80">The limit on efficiency for <em>ANY possible algorithm</em>.</p>
+                            <p class="text-xs mt-2 text-red-300">"It is impossible to solve it faster than this."</p>
+                        </div>
+                    </div>
+
+                    <!-- TIGHTNESS VS GAP -->
+                    <div class="bg-white/5 p-6 rounded-xl">
+                        <h4 class="font-bold text-accent mb-4 text-center">Is the Problem "Tight"?</h4>
+                        
+                        <div class="flex flex-col md:flex-row items-center justify-around gap-4 text-center">
+                            <!-- TIGHT -->
+                            <div class="w-full">
+                                <div class="text-green-400 font-bold mb-1">Tight Problem</div>
+                                <div class="text-xs opacity-60 mb-2">Lower Bound ≈ Upper Bound</div>
+                                <div class="bg-black/30 p-3 rounded border border-green-500/30">
+                                    <p class="font-mono text-sm">Sorting</p>
+                                    <p class="text-xs mt-1">Both are $O(n \log n)$</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-2xl opacity-30 hidden md:block">|</div>
+
+                            <!-- GAP -->
+                            <div class="w-full">
+                                <div class="text-yellow-400 font-bold mb-1">Algorithmic Gap</div>
+                                <div class="text-xs opacity-60 mb-2">Lower Bound < Upper Bound</div>
+                                <div class="bg-black/30 p-3 rounded border border-yellow-500/30">
+                                    <p class="font-mono text-sm">Matrix Mult.</p>
+                                    <p class="text-xs mt-1">Gap between $n^2$ and $n^{2.37}$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRIVIAL LOWER BOUND -->
+                    <div>
+                        <h4 class="font-bold text-accent mb-2">Trivial Lower Bounds</h4>
+                        <p class="text-sm opacity-80 mb-2">Found by counting input/output size. An algorithm <em>must</em> at least read the input and write the output.</p>
+                        <ul class="list-disc pl-5 text-sm font-mono opacity-70">
+                            <li>Matrix Multiplication: Input is $2n^2$, so LB is $\Omega(n^2)$.</li>
+                            <li>Permutations: Output is $n!$, so LB is $\Omega(n!)$.</li>
+                        </ul>
+                        <p class="text-xs mt-2 text-red-400">Warning: Trivial bounds are often too low to be useful (e.g. TSP input is $n^2$, but the problem is much harder).</p>
+                    </div>
+                </div>
+            `
+        },
+        'lim-adversary': {
+            title: 'Adversary Arguments',
+            html: `
+                <div class="space-y-6">
+                    <p class="opacity-80">How do we prove a Lower Bound? We imagine a <strong>Malevolent but Honest Adversary</strong>.</p>
+                    
+                    <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+                        <h4 class="font-bold text-white mb-2">The Concept</h4>
+                        <ul class="list-disc pl-5 text-sm space-y-2 opacity-80">
+                            <li>The Adversary makes up the input <em>as the algorithm runs</em>.</li>
+                            <li>They always force the algorithm down the <strong>worst/longest path</strong>.</li>
+                            <li>They must stay consistent with their previous answers.</li>
+                        </ul>
+                    </div>
+
+                    <!-- VISUAL EXAMPLE: GUESSING GAME -->
+                    <div class="bg-black/30 p-6 rounded-xl border border-white/10 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-accent text-black text-xs font-bold px-2 py-1">Example: Guess Number 1-25</div>
+                        
+                        <div class="space-y-4">
+                            <!-- Step 1 -->
+                            <div class="flex items-start gap-3">
+                                <div class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-lg text-sm rounded-tl-none">
+                                    Algorithm: "Is it 8?"
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 flex-row-reverse">
+                                <div class="bg-red-600/20 text-red-300 px-3 py-1 rounded-lg text-sm rounded-tr-none text-right">
+                                    Adversary (Thinking): <span class="italic text-gray-400">Range 1-7 (7 nums) vs 9-25 (17 nums). I'll choose the bigger set.</span><br>
+                                    <strong class="text-white">"No, it is Bigger."</strong>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="flex items-start gap-3">
+                                <div class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-lg text-sm rounded-tl-none">
+                                    Algorithm: "Is it 20?"
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 flex-row-reverse">
+                                <div class="bg-red-600/20 text-red-300 px-3 py-1 rounded-lg text-sm rounded-tr-none text-right">
+                                    Adversary (Thinking): <span class="italic text-gray-400">Range 9-19 (11 nums) vs 21-25 (5 nums).</span><br>
+                                    <strong class="text-white">"No, it is Smaller."</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-white/10 text-center text-sm">
+                            <p class="opacity-70">The adversary forces the algorithm to eliminate candidates as slowly as possible.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-3 bg-white/5 rounded border border-white/10">
+                            <h5 class="font-bold text-accent text-sm">Finding Max (of n items)</h5>
+                            <p class="text-xs opacity-70 mt-1">To be the winner, you must beat everyone else. If $m$ hasn't lost yet, it could still be the winner. Adversary ensures $n-1$ comparisons are strictly necessary.</p>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded border border-white/10">
+                            <h5 class="font-bold text-accent text-sm">Merging Sorted Lists</h5>
+                            <p class="text-xs opacity-70 mt-1">Adversary arranges data such that you cannot skip comparing any adjacent pairs ($2n-1$ comparisons needed).</p>
+                        </div>
+                    </div>
                 </div>
             `
         }
