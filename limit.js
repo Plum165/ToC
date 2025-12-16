@@ -7,7 +7,10 @@ export const limitModule = {
         { id: 'lim-diagonal', title: 'Cantor\'s Diagonalization' },
         { id: 'lim-decidable', title: 'Decidable vs. Acceptable' },
         { id: 'lim-halting', title: 'The Halting Problem' },
-        { id: 'lim-church', title: 'Church-Turing Thesis' }
+        { id: 'lim-church', title: 'Church-Turing Thesis' },
+        { id: 'lim-efficiency', title: 'Analysis of Algorithms' },
+        { id: 'lim-tractability', title: 'Tractable vs. Intractable' },
+        { id: 'lim-types', title: 'Decision vs. Optimization' }
     ],
     content: {
         'lim-countability': {
@@ -248,6 +251,233 @@ export const limitModule = {
                     </div>
                 </div>
             `
+        },
+         'lim-countability': {
+            title: 'Countability: TMs vs. Languages',
+            html: `
+                <div class="space-y-6">
+                    <div class="bg-white/5 p-5 rounded-lg border-l-4 border-blue-400">
+                        <h4 class="font-bold text-accent text-lg mb-2">1. Turing Machines are Countable</h4>
+                        <p class="opacity-80 mb-2">Every TM has a unique "Turing Number" (binary encoding). Since they can be listed ($M_1, M_2...$), the set of TMs is <strong>Countably Infinite</strong>.</p>
+                    </div>
+                    <div class="bg-white/5 p-5 rounded-lg border-l-4 border-red-400">
+                        <h4 class="font-bold text-accent text-lg mb-2">2. Languages are Uncountable</h4>
+                        <p class="opacity-80 mb-2">The set of all possible languages (Power Set of strings) is <strong>Uncountably Infinite</strong>.</p>
+                        <p class="text-sm mt-2 font-mono bg-black/30 p-2 rounded">|Languages| > |Turing Machines|</p>
+                    </div>
+                    <div class="p-4 text-center">
+                        <p class="text-red-300 mt-2 font-bold">Conclusion: There are infinitely many problems that NO Turing Machine can solve.</p>
+                    </div>
+                </div>
+            `
+        },
+        'lim-diagonal': {
+            title: 'Proof: Cantor\'s Diagonalization',
+            html: `
+                <div class="space-y-6">
+                    <p class="opacity-80">To prove Uncountability, we assume a list exists, then prove a contradiction.</p>
+                    <div class="overflow-x-auto bg-black/40 p-4 rounded-xl border border-white/10">
+                        <table class="w-full text-center font-mono text-lg">
+                            <thead><tr class="text-gray-500"><th class="p-2">Sub</th><th class="p-2">e1</th><th class="p-2">e2</th><th class="p-2">e3</th></tr></thead>
+                            <tbody>
+                                <tr><td class="text-accent">S1</td><td class="text-red-500 font-bold bg-red-900/20">T</td><td class="opacity-50">T</td><td class="opacity-50">T</td></tr>
+                                <tr><td class="text-accent">S2</td><td class="opacity-50">F</td><td class="text-red-500 font-bold bg-red-900/20">F</td><td class="opacity-50">F</td></tr>
+                                <tr><td class="text-accent">S3</td><td class="opacity-50">T</td><td class="opacity-50">T</td><td class="text-red-500 font-bold bg-red-900/20">F</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">Construct <strong>D</strong> by flipping the diagonal: <strong>F, T, T...</strong></p>
+                        <p class="text-sm text-accent mt-2">D differs from every row. The list is incomplete.</p>
+                    </div>
+                </div>
+            `
+        },
+        'lim-decidable': {
+            title: 'Decidable vs. Acceptable',
+            html: `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-yellow-900/10 border border-yellow-500/30 p-6 rounded-xl">
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-4">Acceptable</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-sm opacity-80">
+                            <li><strong>In Language:</strong> Machine Halts & Accepts.</li>
+                            <li><strong>Not In Language:</strong> Machine Rejects OR <span class="text-red-400">Loops Forever</span>.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-900/10 border border-green-500/30 p-6 rounded-xl">
+                        <h3 class="text-2xl font-bold text-green-400 mb-4">Decidable</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-sm opacity-80">
+                            <li><strong>In Language:</strong> Machine Halts & Accepts.</li>
+                            <li><strong>Not In Language:</strong> Machine Halts & Rejects.</li>
+                            <li class="text-green-300">Never Loops Forever.</li>
+                        </ul>
+                    </div>
+                </div>
+            `
+        },
+        'lim-halting': {
+            title: 'The Halting Problem',
+            html: `
+                <div class="space-y-8">
+                    <p class="text-sm opacity-90">Can we write a program <strong>H</strong> that determines if ANY program halts?</p>
+                    <div class="bg-white/5 p-6 rounded-xl relative flex flex-col items-center">
+                        <div class="p-4 bg-red-900/40 rounded border border-red-500/50 text-center">
+                            <h5 class="font-bold mb-2">The Contradiction Machine (W)</h5>
+                            <p class="text-sm">
+                                1. Feed <strong>W</strong> into itself.<br>
+                                2. If H says "W will Halt", W enters an infinite loop.<br>
+                                3. If H says "W will Loop", W halts immediately.<br>
+                                <span class="text-white font-bold block mt-2">W does the opposite of what H predicts. Therefore H cannot exist.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+
+        /* --- NEW CONTENT STARTS HERE --- */
+
+        'lim-efficiency': {
+            title: 'Analysis of Algorithms',
+            html: `
+                <div class="space-y-8">
+                    <!-- CASES -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+                            <div class="text-2xl mb-2">🚀</div>
+                            <h4 class="font-bold text-green-400">Best Case</h4>
+                            <p class="font-mono text-sm opacity-70">B(n)</p>
+                            <p class="text-xs mt-2">Min ops for input size n.</p>
+                        </div>
+                        <div class="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                            <div class="text-2xl mb-2">🎲</div>
+                            <h4 class="font-bold text-yellow-400">Average Case</h4>
+                            <p class="font-mono text-sm opacity-70">A(n)</p>
+                            <p class="text-xs mt-2">Expected ops on typical input.</p>
+                        </div>
+                        <div class="p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+                            <div class="text-2xl mb-2">🐢</div>
+                            <h4 class="font-bold text-red-400">Worst Case</h4>
+                            <p class="font-mono text-sm opacity-70">W(n)</p>
+                            <p class="text-xs mt-2">Max ops for input size n.</p>
+                        </div>
+                    </div>
+
+                    <!-- SEQUENTIAL SEARCH EXAMPLE -->
+                    <div class="bg-white/5 p-4 rounded-lg">
+                        <h4 class="font-bold text-accent mb-2">Example: Sequential Search</h4>
+                        <p class="text-sm opacity-80 mb-4">Scanning a list of $n$ elements for key $K$.</p>
+                        <div class="space-y-2 text-sm font-mono">
+                            <div class="flex justify-between border-b border-white/10 pb-1">
+                                <span>Best Case</span>
+                                <span class="text-green-400">1 (Found at start)</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/10 pb-1">
+                                <span>Worst Case</span>
+                                <span class="text-red-400">n (Found at end or not found)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Average Case</span>
+                                <span class="text-yellow-400">n/2 (Probabilistic)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        'lim-tractability': {
+            title: 'Tractable vs. Intractable',
+            html: `
+                <div class="space-y-8">
+                    <p class="opacity-80">Just because a problem is <em>Decidable</em> (solvable), doesn't mean it is <em>Tractable</em> (solvable in reasonable time).</p>
+
+                    <!-- DEFINITIONS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-4 rounded border-l-4 border-blue-500 bg-blue-900/10">
+                            <h4 class="font-bold text-blue-400 mb-1">Tractable (Polynomial)</h4>
+                            <p class="text-sm opacity-80">Solvable in $O(n^k)$ time.</p>
+                            <p class="font-mono text-xs mt-2 text-blue-300">n, n log n, n², n¹⁰⁰</p>
+                        </div>
+                        <div class="p-4 rounded border-l-4 border-red-500 bg-red-900/10">
+                            <h4 class="font-bold text-red-400 mb-1">Intractable (Super-poly)</h4>
+                            <p class="text-sm opacity-80">Worse than any polynomial.</p>
+                            <p class="font-mono text-xs mt-2 text-red-300">2ⁿ, n!, nⁿ</p>
+                        </div>
+                    </div>
+
+                    <!-- COMPARISON TABLE -->
+                    <div class="overflow-x-auto">
+                        <h4 class="font-bold text-center mb-4 text-accent">Impact of Input Size (n)</h4>
+                        <table class="w-full text-center text-sm">
+                            <thead>
+                                <tr class="bg-white/10">
+                                    <th class="p-2">Complexity</th>
+                                    <th class="p-2">n = 10</th>
+                                    <th class="p-2">n = 50</th>
+                                    <th class="p-2">n = 60</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-mono">
+                                <tr class="text-blue-400">
+                                    <td class="p-2 border-b border-white/10">n²</td>
+                                    <td class="p-2 border-b border-white/10">Instant</td>
+                                    <td class="p-2 border-b border-white/10">Instant</td>
+                                    <td class="p-2 border-b border-white/10">Instant</td>
+                                </tr>
+                                <tr class="text-blue-400">
+                                    <td class="p-2 border-b border-white/10">n⁵</td>
+                                    <td class="p-2 border-b border-white/10">0.1s</td>
+                                    <td class="p-2 border-b border-white/10">5 mins</td>
+                                    <td class="p-2 border-b border-white/10">13 mins</td>
+                                </tr>
+                                <tr class="text-red-400 font-bold">
+                                    <td class="p-2 border-b border-white/10">2ⁿ</td>
+                                    <td class="p-2 border-b border-white/10">Instant</td>
+                                    <td class="p-2 border-b border-white/10">35 Years</td>
+                                    <td class="p-2 border-b border-white/10">366 Centuries</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `
+        },
+        'lim-types': {
+            title: 'Problem Types: Optimization vs. Decision',
+            html: `
+                <div class="space-y-6">
+                    <p class="opacity-80">Many hard problems come in two flavors. Complexity theory usually focuses on the <strong>Decision</strong> version.</p>
+
+                    <div class="relative bg-white/5 p-6 rounded-xl">
+                        <div class="absolute -top-3 left-6 bg-accent text-black px-2 py-1 text-xs font-bold rounded">Example: Traveling Salesman</div>
+                        
+                        <div class="space-y-6 mt-2">
+                            <div>
+                                <h4 class="font-bold text-purple-400">1. Optimization Problem</h4>
+                                <p class="text-sm opacity-70">"Find the route with the <strong>minimum</strong> weight."</p>
+                                <div class="bg-black/30 p-2 mt-2 rounded border border-red-500/30 text-xs">
+                                    <span class="text-red-400 font-bold">Hard to Verify:</span> If I give you a solution, can you quickly prove it is the <em>absolute minimum</em>? No.
+                                </div>
+                            </div>
+
+                            <div class="w-full h-px bg-white/10"></div>
+
+                            <div>
+                                <h4 class="font-bold text-purple-400">2. Decision Problem</h4>
+                                <p class="text-sm opacity-70">"Does a route of weight <strong>< k</strong> exist?"</p>
+                                <div class="bg-black/30 p-2 mt-2 rounded border border-green-500/30 text-xs">
+                                    <span class="text-green-400 font-bold">Easy to Verify:</span> If I give you a solution (a route), you can quickly add it up and check if it is < k.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-center opacity-60 italic">
+                        "If we could solve the decision problem efficiently, we could solve the optimization problem efficiently (using binary search on k)."
+                    </p>
+                </div>
+            `
         }
+    
     }
 };
