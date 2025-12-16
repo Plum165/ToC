@@ -2,18 +2,14 @@
 
 // 1. IMPORT MODULES
 import { turingModule } from './tm.js';
+import { limitModule } from './limit.js';
 
 // NOTE: Once you have created limit.js, import it like this:
 // import { limitModule } from './limit.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 2. DEFINE PLACEHOLDERS (Until you create the specific files)
-    const limitModule = {
-        id: 'lim', title: 'Limitations of Algorithmic Power',
-        subtopics: [ { id: 'lim-1', title: 'Undecidability' } ],
-        content: { 'lim-1': { title: 'Undecidability', html: '<p>Content coming soon...</p>' } }
-    };
+    
     
     const copingModule = {
         id: 'cop', title: 'Coping with Limitations',
