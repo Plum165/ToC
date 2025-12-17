@@ -78,17 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150);
     }
 
-    // Render Main Content
+   // Render Main Content
     function renderContent(moduleId, topicId) {
         const module = CURRICULUM[moduleId];
         const data = module.content[topicId];
 
         if (!data) return;
 
+        // Fade out
         topicRoot.style.opacity = '0';
         topicRoot.style.transform = 'translateY(10px)';
 
         setTimeout(() => {
+            // Inject HTML
             topicRoot.innerHTML = `
                 <div class="animate-fadeIn">
                     <h2 class="text-3xl font-extrabold mb-6 border-b border-white/10 pb-4">${data.title}</h2>
@@ -97,8 +99,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
+            
+            // Fade in
             topicRoot.style.opacity = '1';
             topicRoot.style.transform = 'translateY(0)';
+
+            // === ADD THIS BLOCK ===
+            // Trigger MathJax to render the new content
+            if (window.MathJax) {
+                MathJax.typesetPromise([topicRoot]).then(() => {
+                    console.log('MathJax rendered successfully');
+                }).catch((err) => console.log('MathJax error:', err));
+            }
+            // ======================
+
         }, 200);
     }
 
