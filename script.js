@@ -3,6 +3,8 @@
 // 1. IMPORT MODULES
 import { turingModule } from './tm.js';
 import { limitModule } from './limit.js';
+import { copingModule } from './cop.js';
+import { probModule } from './red.js';
 
 // NOTE: Once you have created limit.js, import it like this:
 // import { limitModule } from './limit.js';
@@ -11,17 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     
-    const copingModule = {
-        id: 'cop', title: 'Coping with Limitations',
-        subtopics: [ { id: 'cop-1', title: 'Approximation' } ],
-        content: { 'cop-1': { title: 'Approximation', html: '<p>Content coming soon...</p>' } }
-    };
     
-    const probModule = {
-        id: 'prob', title: 'P, NP, and NP-Complete',
-        subtopics: [ { id: 'prob-1', title: 'Classes of Complexity' } ],
-        content: { 'prob-1': { title: 'Complexity Classes', html: '<p>Content coming soon...</p>' } }
-    };
+    
 
     // 3. CENTRAL REGISTRY
     const CURRICULUM = {

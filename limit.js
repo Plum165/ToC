@@ -16,7 +16,9 @@ export const limitModule = {
 
         /* --- NEW TOPICS FROM LATEST PDF --- */
         { id: 'lim-lowerbounds', title: 'Lower Bounds & Gaps' },
-        { id: 'lim-adversary', title: 'Adversary Arguments' }
+        { id: 'lim-adversary', title: 'Adversary Arguments' },
+            { id: 'lim-decisiontrees', title: 'Decision Trees & Sorting' },
+        { id: 'lim-reduction', title: 'Problem Reduction' }
 
         
     ],
@@ -544,7 +546,65 @@ export const limitModule = {
                         <p class="text-xs mt-2 text-red-400">Warning: Trivial bounds are often too low to be useful (e.g. TSP input is $n^2$, but the problem is much harder).</p>
                     </div>
                 </div>
-            `
+            
+
+                  <div class="space-y-8">
+                    <!-- DEFINITIONS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-blue-900/10 border-l-4 border-blue-500 p-4 rounded">
+                            <h4 class="font-bold text-blue-400">Upper Bound (Algorithm)</h4>
+                            <p class="text-sm opacity-80">The complexity of the <em>best known algorithm</em>.</p>
+                            <p class="text-xs mt-2 text-blue-300">"Sufficient: We know we can do it this fast."</p>
+                        </div>
+                        <div class="bg-red-900/10 border-l-4 border-red-500 p-4 rounded">
+                            <h4 class="font-bold text-red-400">Lower Bound (Problem)</h4>
+                            <p class="text-sm opacity-80">The limit on efficiency for <em>ANY possible algorithm</em>.</p>
+                            <p class="text-xs mt-2 text-red-300">"Necessary: Impossible to be faster than this."</p>
+                        </div>
+                    </div>
+
+                    <!-- TIGHTNESS VS GAP -->
+                    <div class="bg-white/5 p-6 rounded-xl">
+                        <h4 class="font-bold text-accent mb-4 text-center">Is the Problem "Tight"?</h4>
+                        
+                        <div class="flex flex-col md:flex-row items-center justify-around gap-4 text-center">
+                            <!-- TIGHT -->
+                            <div class="w-full">
+                                <div class="text-green-400 font-bold mb-1">Tight Problem</div>
+                                <div class="text-xs opacity-60 mb-2">Lower Bound ≈ Upper Bound</div>
+                                <div class="bg-black/30 p-3 rounded border border-green-500/30">
+                                    <p class="font-mono text-sm">Sorting</p>
+                                    <p class="text-xs mt-1">Both are $O(n \log n)$</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-2xl opacity-30 hidden md:block">|</div>
+
+                            <!-- GAP -->
+                            <div class="w-full">
+                                <div class="text-yellow-400 font-bold mb-1">Algorithmic Gap</div>
+                                <div class="text-xs opacity-60 mb-2">Lower Bound < Upper Bound</div>
+                                <div class="bg-black/30 p-3 rounded border border-yellow-500/30">
+                                    <p class="font-mono text-sm">Matrix Mult.</p>
+                                    <p class="text-xs mt-1">Gap between $n^2$ and $n^{2.37}$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRIVIAL LOWER BOUND -->
+                    <div>
+                        <h4 class="font-bold text-accent mb-2">Trivial Lower Bounds</h4>
+                        <p class="text-sm opacity-80 mb-2">Found by counting input/output size. An algorithm <em>must</em> at least read the input and write the output.</p>
+                        <ul class="list-disc pl-5 text-sm font-mono opacity-70">
+                            <li>Matrix Multiplication: Input is $2n^2$, so LB is $\Omega(n^2)$.</li>
+                            <li>Permutations: Output is $n!$, so LB is $\Omega(n!)$.</li>
+                        </ul>
+                    </div>
+                </div>
+            
+                `
+            
         },
         'lim-adversary': {
             title: 'Adversary Arguments',
@@ -592,10 +652,6 @@ export const limitModule = {
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="mt-4 pt-4 border-t border-white/10 text-center text-sm">
-                            <p class="opacity-70">The adversary forces the algorithm to eliminate candidates as slowly as possible.</p>
-                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -606,6 +662,70 @@ export const limitModule = {
                         <div class="p-3 bg-white/5 rounded border border-white/10">
                             <h5 class="font-bold text-accent text-sm">Merging Sorted Lists</h5>
                             <p class="text-xs opacity-70 mt-1">Adversary arranges data such that you cannot skip comparing any adjacent pairs ($2n-1$ comparisons needed).</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+         'lim-decisiontrees': {
+            title: 'Decision Trees & Sorting',
+            html: `
+                <div class="space-y-6">
+                    <p class="opacity-80">Any comparison-based algorithm can be visualized as a tree where every node is a comparison ($a < b$).</p>
+
+                    <div class="flex justify-center">
+                        <div class="relative w-[300px] h-[150px] bg-black/40 rounded border border-white/10 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="font-bold text-white mb-1">Height = Worst Case</div>
+                                <div class="text-xs opacity-70">Path from Root to Deepest Leaf</div>
+                                <div class="w-full h-px bg-white/20 my-2"></div>
+                                <div class="font-bold text-white mb-1">Avg Depth = Average Case</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 p-6 rounded-xl border-l-4 border-yellow-500">
+                        <h4 class="font-bold text-xl mb-4">Sorting Complexity Proof</h4>
+                        <ol class="list-decimal pl-5 space-y-3 text-sm font-mono">
+                            <li>To sort <strong>n</strong> items, there are <strong>n!</strong> possible orderings (permutations).</li>
+                            <li>A binary decision tree must have at least <strong>n!</strong> leaves.</li>
+                            <li>Height <strong>h</strong> of binary tree with <strong>L</strong> leaves: <span class="text-accent">h ≥ log₂(L)</span></li>
+                            <li>Thus: <span class="text-accent">h ≥ log₂(n!) ≈ n log n</span> (Stirling's approx).</li>
+                        </ol>
+                        <p class="mt-4 text-center font-bold text-yellow-400">
+                            Lower Bound = Ω(n log n)
+                        </p>
+                    </div>
+                </div>
+            `
+        },
+        'lim-reduction': {
+            title: 'Problem Reduction',
+            html: `
+                <div class="space-y-6">
+                    <p class="opacity-80">A powerful technique: "If I can solve Problem Q, I can solve Problem P."</p>
+
+                    <div class="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-xl">
+                        <div class="flex items-center gap-2">
+                            <div class="bg-gray-700 px-4 py-2 rounded">Problem P</div>
+                            <span>&le;</span>
+                            <div class="bg-accent text-black px-4 py-2 rounded font-bold">Problem Q</div>
+                        </div>
+                        <p class="text-sm text-center">
+                            "P is reducible to Q"<br>
+                            <span class="text-xs opacity-60">Implies P is no harder than Q. If we know Q's lower bound, it applies to P.</span>
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-black/30 p-4 rounded border border-white/10">
+                            <h5 class="font-bold text-accent mb-2">Example: Euclidean MST</h5>
+                            <p class="text-xs opacity-80">We can reduce <strong>Element Uniqueness</strong> (Sorting) to MST. Since Sorting is $\Omega(n \log n)$, MST is also at least $\Omega(n \log n)$.</p>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded border border-white/10">
+                            <h5 class="font-bold text-accent mb-2">Squaring vs Multiplying</h5>
+                            <p class="text-xs opacity-80 font-mono mb-1">x*y = ((x+y)² - (x-y)²) / 4</p>
+                            <p class="text-xs opacity-80">Multiplication reduces to Squaring. Squaring is not harder than Multiplying.</p>
                         </div>
                     </div>
                 </div>
