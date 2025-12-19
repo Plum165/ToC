@@ -41,40 +41,84 @@ export const turingModule = {
                 </div>
             `
         },
-        'tm-def': {
-            title: 'A Turing Machine Comprises:',
-            html: `
-                <div class="space-y-6">
-                    <ul class="list-disc pl-5 space-y-2 opacity-90">
-                        <li><strong>A Tape:</strong> With equal-sized blocks or cells, extending indefinitely to the right.</li>
-                        <li><strong>A Tape Head:</strong> Positioned at one of these cells to read/write.</li>
-                        <li><strong>Input Alphabet:</strong> Symbols that can initially appear on the tape.</li>
-                        <li><strong>Tape Alphabet:</strong> Symbols that can be written to the tape (includes input symbols + blanks).</li>
-                        <li><strong>Set of States (S):</strong> Including an <em>Initial State</em> and <em>Halt States</em>.</li>
-                        <li><strong>State Table:</strong> Instructions on what to do based on (Current State, Current Symbol).</li>
-                    </ul>
+       'tm-def': {
+    title: 'A Turing Machine Comprises:',
+    html: `
+        <div class="space-y-8">
 
-                    <div class="p-4 border border-white/20 rounded bg-black/30 text-center font-mono text-lg text-accent">
-                        M = ( {p, q}, {x,y}, {x,y,◊}, δ , p, {q} )
-                    </div>
-                    
-                    <div class="mt-4">
-                        <h4 class="font-bold mb-2">How will it all end?</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                            <div class="bg-green-900/30 p-3 rounded border border-green-500/30">
-                                1. Terminate in a <strong>Halt State</strong>.
-                            </div>
-                            <div class="bg-red-900/30 p-3 rounded border border-red-500/30">
-                                2. <strong>Crash</strong> (undefined action or going off left edge).
-                            </div>
-                            <div class="bg-yellow-900/30 p-3 rounded border border-yellow-500/30">
-                                3. <strong>Loop Forever</strong> (Go on and on...).
-                            </div>
-                        </div>
+            <!-- Definition List -->
+            <ul class="list-disc pl-5 space-y-2 opacity-90">
+                <li><strong>A Tape:</strong> Equal-sized cells extending indefinitely to the right.</li>
+                <li><strong>A Tape Head:</strong> Reads from and writes to one cell at a time.</li>
+                <li><strong>Input Alphabet:</strong> Symbols initially placed on the tape.</li>
+                <li><strong>Tape Alphabet:</strong> Symbols allowed on the tape (includes blanks).</li>
+                <li><strong>Set of States (S):</strong> Includes a start state and halt states.</li>
+                <li><strong>State Table (δ):</strong> Defines actions based on (state, symbol).</li>
+            </ul>
+
+            <!-- Visual Illustration -->
+            <div class="p-4 border border-white/20 rounded bg-black/30 space-y-4">
+                <h4 class="font-bold text-center">Illustration: How a Turing Machine Looks</h4>
+
+                <!-- Tape -->
+                <div class="flex justify-center gap-1 font-mono text-sm">
+                    <div class="px-3 py-2 border border-white/30">◊</div>
+                    <div class="px-3 py-2 border border-white/30">x</div>
+                    <div class="px-3 py-2 border border-accent bg-accent/20">y</div>
+                    <div class="px-3 py-2 border border-white/30">x</div>
+                    <div class="px-3 py-2 border border-white/30">◊</div>
+                    <div class="px-3 py-2 border border-white/30 opacity-50">...</div>
+                </div>
+
+                <!-- Tape Head -->
+                <div class="text-center font-mono text-accent">
+                    ▲<br/>
+                    Tape Head (reads / writes)
+                </div>
+
+                <!-- State Box -->
+                <div class="flex justify-center">
+                    <div class="px-6 py-3 border border-blue-400/40 rounded bg-blue-900/20 font-mono text-sm">
+                        Current State: <strong>p</strong>
                     </div>
                 </div>
-            `
-        },
+
+                <!-- Transition Explanation -->
+                <div class="text-center font-mono text-sm opacity-80">
+                    δ(p, y) → (q, x, R)
+                </div>
+
+                <div class="text-center text-xs opacity-70">
+                    If in state <strong>p</strong> reading <strong>y</strong>:<br/>
+                    write <strong>x</strong>, move <strong>Right</strong>, go to state <strong>q</strong>
+                </div>
+            </div>
+
+            <!-- Formal Definition -->
+            <div class="p-4 border border-white/20 rounded bg-black/30 text-center font-mono text-lg text-accent">
+                M = ( {p, q}, {x, y}, {x, y, ◊}, δ , p, {q} )
+            </div>
+
+            <!-- Ending Conditions -->
+            <div>
+                <h4 class="font-bold mb-2">How will it all end?</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                    <div class="bg-green-900/30 p-3 rounded border border-green-500/30">
+                        1. Terminate in a <strong>Halt State</strong>.
+                    </div>
+                    <div class="bg-red-900/30 p-3 rounded border border-red-500/30">
+                        2. <strong>Crash</strong> (undefined action or left-edge error).
+                    </div>
+                    <div class="bg-yellow-900/30 p-3 rounded border border-yellow-500/30">
+                        3. <strong>Loop Forever</strong>.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    `
+}
+,
         'tm-schematic': {
             title: 'Schematic & State Tables',
             html: `
