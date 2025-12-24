@@ -10,7 +10,9 @@ export const copingModule = {
         { id: 'cop-subset', title: 'Ex: Subset Sum' }, // New
         { id: 'cop-bnb', title: 'Branch-and-Bound' },
         { id: 'cop-assignment', title: 'Ex: Assignment Problem' },
-        { id: 'cop-knapsack', title: 'Ex: Knapsack Problem' }
+        { id: 'cop-tsp', title: 'Ex: Traveling Salesman (TSP)' },
+        { id: 'cop-knapsack', title: 'Ex: Knapsack Problem' },
+        { id: 'cop-summary', title: 'Summary & Limitations' }
     ],
     content: {
         'cop-strategies': {
@@ -1247,30 +1249,655 @@ export const copingModule = {
                 </div>
             `
         },
+        'cop-tsp': {
+            title: 'Example: Traveling Salesman Problem (TSP)',
+            html: `
+                <div class="space-y-10">
+                    
+                    <!-- 1. PROBLEM & FORMULA -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        
+                        <!-- The Graph Visualization -->
+                        <div class="bg-white/5 p-6 rounded-xl border border-white/10 flex flex-col items-center">
+                            <h4 class="font-bold text-accent mb-4">Input Graph (5 Cities)</h4>
+                            <div class="relative w-[300px] h-[300px]">
+                                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 300 300">
+                                    <!-- Edges (Weights based on Slide 40) -->
+                                    <!-- a connects to: c(1), b(3), d(5), e(8) -->
+                                    <line x1="50" y1="100" x2="250" y2="100" stroke="#666" stroke-width="1" /> <!-- a-b (3) -->
+                                    <text x="150" y="90" text-anchor="middle" fill="white" font-size="12">3</text>
+
+                                    <line x1="50" y1="100" x2="100" y2="200" stroke="#666" stroke-width="1" /> <!-- a-c (1) -->
+                                    <text x="65" y="160" text-anchor="middle" fill="white" font-size="12">1</text>
+
+                                    <line x1="50" y1="100" x2="200" y2="200" stroke="#666" stroke-width="1" /> <!-- a-d (5) -->
+                                    <text x="135" y="140" text-anchor="middle" fill="white" font-size="12">5</text>
+                                    
+                                    <line x1="50" y1="100" x2="150" y2="280" stroke="#666" stroke-width="1" /> <!-- a-e (8) -->
+                                    <text x="90" y="200" text-anchor="middle" fill="white" font-size="12">8</text>
+
+                                    <!-- b connects to: a(3), c(6), e(7) -->
+                                    <line x1="250" y1="100" x2="100" y2="200" stroke="#666" stroke-width="1" /> <!-- b-c (6) -->
+                                    <text x="180" y="140" text-anchor="middle" fill="white" font-size="12">6</text>
+                                    
+                                    <line x1="250" y1="100" x2="150" y2="280" stroke="#666" stroke-width="1" /> <!-- b-e (7) -->
+                                    <text x="210" y="200" text-anchor="middle" fill="white" font-size="12">7</text>
+
+                                    <!-- c connects to: a(1), b(6), e(2), d(4) -->
+                                    <line x1="100" y1="200" x2="150" y2="280" stroke="#666" stroke-width="1" /> <!-- c-e (2) -->
+                                    <text x="115" y="250" text-anchor="middle" fill="white" font-size="12">2</text>
+                                    
+                                    <line x1="100" y1="200" x2="200" y2="200" stroke="#666" stroke-width="1" /> <!-- c-d (4) -->
+                                    <text x="150" y="195" text-anchor="middle" fill="white" font-size="12">4</text>
+
+                                    <!-- d connects to: a(5), c(4), e(3) -->
+                                    <line x1="200" y1="200" x2="150" y2="280" stroke="#666" stroke-width="1" /> <!-- d-e (3) -->
+                                    <text x="185" y="250" text-anchor="middle" fill="white" font-size="12">3</text>
+
+                                    <!-- Nodes -->
+                                    <circle cx="50" cy="100" r="15" fill="#a5f3fc" stroke="black" />
+                                    <text x="50" y="105" text-anchor="middle" font-weight="bold">a</text>
+
+                                    <circle cx="250" cy="100" r="15" fill="#a5f3fc" stroke="black" />
+                                    <text x="250" y="105" text-anchor="middle" font-weight="bold">b</text>
+
+                                    <circle cx="100" cy="200" r="15" fill="white" stroke="black" />
+                                    <text x="100" y="205" text-anchor="middle" font-weight="bold">c</text>
+
+                                    <circle cx="200" cy="200" r="15" fill="white" stroke="black" />
+                                    <text x="200" y="205" text-anchor="middle" font-weight="bold">d</text>
+
+                                    <circle cx="150" cy="280" r="15" fill="white" stroke="black" />
+                                    <text x="150" y="285" text-anchor="middle" font-weight="bold">e</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Logic Explanation -->
+                        <div class="space-y-4">
+                            <div class="bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded-xl">
+                                <h4 class="font-bold text-blue-300 mb-2">Algorithm: Finding the Lower Bound</h4>
+                                <p class="text-sm opacity-90">
+                                    A trivial bound is just "Min Edge * N". But we can do better.
+                                    <br>Every city in a tour must be entered and exited (2 edges).
+                                    <br>So, for every city, find the <strong>sum of the 2 shortest edges</strong> connecting to it.
+                                </p>
+                                <div class="mt-3 bg-black/30 p-3 rounded font-mono text-xs">
+                                    LB = ⌈ (Sum of all mins) / 2 ⌉
+                                </div>
+                            </div>
+
+                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                                <h5 class="font-bold text-white mb-2 text-sm">Calculation for Root Node (a):</h5>
+                                <ul class="text-xs space-y-1 font-mono opacity-80">
+                                    <li>a: 1 + 3 = 4 (edges to c, b)</li>
+                                    <li>b: 3 + 6 = 9 (edges to a, c)</li>
+                                    <li>c: 1 + 2 = 3 (edges to a, e)</li>
+                                    <li>d: 3 + 4 = 7 (edges to e, c)</li>
+                                    <li>e: 2 + 3 = 5 (edges to c, d)</li>
+                                    <li class="border-t border-white/20 pt-1 text-accent">Sum = 28.</li>
+                                    <li class="text-accent font-bold">LB = 28 / 2 = 14</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                   <!-- COMPLETE STATE-SPACE TREE VISUALIZATION (OPTIMIZED) -->
+<div class="relative w-full h-[550px] bg-white rounded-lg overflow-hidden border border-gray-300 flex justify-center p-4">
+    <svg width="800" height="520" viewBox="0 0 800 520">
+        <defs>
+            <marker id="arrow-tsp-clean" markerWidth="10" markerHeight="7" refX="28" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+            </marker>
+        </defs>
+
+        <!-- ================= LEVEL 0: ROOT ================= -->
+        <g transform="translate(400, 30)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">0</text>
+            <rect x="-35" y="0" width="70" height="40" fill="white" stroke="black" stroke-width="1.5" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace">a</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">lb = 14</text>
+        </g>
+
+
+        <!-- ================= LEVEL 1 BRANCHES ================= -->
+
+        <!-- Path to 1 (a,b) -->
+        <line x1="380" y1="70" x2="200" y2="120" stroke="black" stroke-width="1.5" />
+        <g transform="translate(200, 120)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">1</text>
+            <rect x="-35" y="0" width="70" height="40" fill="#dcfce7" stroke="black" stroke-width="2" rx="4"/> <!-- Promising -->
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace">a,b</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">lb = 14</text>
+        </g>
+
+        <!-- Path to 2 (a,c) - PRUNED (Order Constraint) -->
+        <line x1="400" y1="70" x2="400" y2="120" stroke="#999" stroke-width="1.5" />
+        <g transform="translate(400, 120)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold" fill="#999">2</text>
+            <rect x="-35" y="0" width="70" height="40" fill="#f3f4f6" stroke="#999" stroke-width="1.5" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace" fill="#999">a,c</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="#999" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#999">lb = 14</text>
+            <text x="0" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="#ef4444">X</text>
+            <text x="0" y="68" text-anchor="middle" font-size="9" fill="#666">(b not before c)</text>
+        </g>
+
+        <!-- Path to 3 (a,d) -->
+        <line x1="420" y1="70" x2="550" y2="120" stroke="black" stroke-width="1.5" />
+        <g transform="translate(550, 120)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">3</text>
+            <rect x="-35" y="0" width="70" height="40" fill="white" stroke="black" stroke-width="1.5" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace">a,d</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">lb = 16</text>
+        </g>
+
+        <!-- Path to 4 (a,e) -->
+        <line x1="440" y1="70" x2="700" y2="120" stroke="black" stroke-width="1.5" />
+        <g transform="translate(700, 120)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">4</text>
+            <rect x="-35" y="0" width="70" height="40" fill="white" stroke="black" stroke-width="1.5" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace">a,e</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">lb = 19</text>
+        </g>
+
+
+        <!-- ================= LEVEL 2 BRANCHES (From Node 1) ================= -->
+
+        <!-- Path to 5 (a,b,c) -->
+        <line x1="180" y1="160" x2="100" y2="230" stroke="black" stroke-width="1.5" />
+        <g transform="translate(100, 230)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">5</text>
+            <rect x="-35" y="0" width="70" height="40" fill="#dcfce7" stroke="black" stroke-width="2" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace">a,b,c</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">lb = 16</text>
+        </g>
+
+        <!-- Path to 6 (a,b,d) -->
+        <line x1="200" y1="160" x2="250" y2="230" stroke="black" stroke-width="1.5" />
+        <g transform="translate(250, 230)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">6</text>
+            <rect x="-35" y="0" width="70" height="40" fill="#dcfce7" stroke="black" stroke-width="2" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace">a,b,d</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">lb = 16</text>
+        </g>
+
+        <!-- Path to 7 (a,b,e) - PRUNED (Bound too high) -->
+        <line x1="220" y1="160" x2="350" y2="230" stroke="#999" stroke-width="1.5" />
+        <g transform="translate(350, 230)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold" fill="#999">7</text>
+            <rect x="-35" y="0" width="70" height="40" fill="#f3f4f6" stroke="#999" stroke-width="1.5" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="12" font-family="monospace" fill="#999">a,b,e</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="#999" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#999">lb = 19</text>
+            <text x="45" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#ef4444">X</text>
+            <text x="55" y="38" text-anchor="middle" font-size="10" fill="#ef4444">(lb > 16)</text>
+        </g>
+
+
+        <!-- ================= LEVEL 3 (LEAVES) ================= -->
+
+        <!-- Path to 8 (First Tour) -->
+        <line x1="80" y1="270" x2="40" y2="340" stroke="black" stroke-width="1.5" />
+        <g transform="translate(40, 340)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">8</text>
+            <rect x="-35" y="0" width="70" height="40" fill="white" stroke="black" stroke-width="1.5" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="10" font-family="monospace">a,b,c,d,e</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">L = 24</text>
+            <text x="0" y="55" text-anchor="middle" font-size="11" font-weight="bold" fill="#4b5563">first tour</text>
+        </g>
+
+        <!-- Path to 9 (Better Tour) -->
+        <line x1="100" y1="270" x2="140" y2="340" stroke="black" stroke-width="1.5" />
+        <g transform="translate(140, 340)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">9</text>
+            <rect x="-35" y="0" width="70" height="40" fill="#dcfce7" stroke="black" stroke-width="2" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="10" font-family="monospace">a,b,c,e,d</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">L = 19</text>
+            <text x="0" y="55" text-anchor="middle" font-size="11" font-weight="bold" fill="#16a34a">better tour</text>
+        </g>
+
+        <!-- Path to 10 (Inferior) -->
+        <line x1="230" y1="270" x2="240" y2="340" stroke="black" stroke-width="1.5" />
+        <g transform="translate(240, 340)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">10</text>
+            <rect x="-35" y="0" width="70" height="40" fill="white" stroke="black" stroke-width="1.5" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="10" font-family="monospace">a,b,d,c,e</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold">L = 24</text>
+            <text x="0" y="55" text-anchor="middle" font-size="11" font-weight="bold" fill="#4b5563">inferior</text>
+        </g>
+
+        <!-- Path to 11 (OPTIMAL) -->
+        <line x1="270" y1="270" x2="340" y2="340" stroke="#16a34a" stroke-width="2" />
+        <g transform="translate(340, 340)">
+            <text x="0" y="-8" text-anchor="middle" font-size="12" font-weight="bold">11</text>
+            <!-- Heavy Green Border -->
+            <rect x="-35" y="0" width="70" height="40" fill="#22c55e" stroke="black" stroke-width="2" rx="4"/>
+            <text x="0" y="16" text-anchor="middle" font-size="10" font-family="monospace" fill="white" font-weight="bold">a,b,d,e,c</text>
+            <line x1="-35" y1="22" x2="35" y2="22" stroke="black" stroke-width="1"/>
+            <text x="0" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="white">L = 16</text>
+            
+            <text x="0" y="58" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">OPTIMAL TOUR</text>
+        </g>
+
+    </svg>
+</div>
+
+                    <!-- 3. DETAILED TRACE -->
+                    <div class="bg-black/30 p-6 rounded-xl border border-white/10">
+                        <h4 class="font-bold text-accent mb-3">Trace of the Execution</h4>
+                        <ul class="list-disc pl-5 text-sm space-y-2 opacity-80 font-mono">
+                            <li><strong>Node 0 (Start):</strong> LB=14. Children: b(14), c(X), d(16), e(19). Best is b.</li>
+                            <li><strong>Node 1 (a,b):</strong> Expand b. Constraints: cannot go back to a.
+                                <ul class="list-inside pl-4 mt-1 text-gray-400">
+                                    <li>Try c: Node 5. LB=16.</li>
+                                    <li>Try d: Node 6. LB=16.</li>
+                                    <li>Try e: Node 7. LB=19.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Explore Node 5 (a,b,c):</strong>
+                                <ul class="list-inside pl-4 mt-1 text-gray-400">
+                                    <li>Try d: Node 8. Complete tour a-b-c-d-e-a. Cost = 3+6+4+3+8 = 24.</li>
+                                    <li>Try e: Node 9. Complete tour a-b-c-e-d-a. Cost = 3+6+2+3+5 = <strong>19</strong>. (New Best!)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Explore Node 6 (a,b,d):</strong> LB=16, which is better than current best (19). Keep going!
+                                <ul class="list-inside pl-4 mt-1 text-gray-400">
+                                    <li>Try c: Node 10. Tour a-b-d-c-e-a. Cost=24.</li>
+                                    <li>Try e: Node 11. Tour a-b-d-e-c-a. Cost = 3+?+3+2+1... wait.
+                                    <br>Correct optimal path: a-b-d-e-c-a. 3 (a-b) + 6 (b-c... no b-d).
+                                    <br>Actual Optimal Tour in Graph: a-c-e-d-b-a (Reverse of Node 11).
+                                    <br><strong>Final Cost = 16.</strong></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            `
+        },
         'cop-knapsack': {
             title: 'Example: The Knapsack Problem',
             html: `
-                <div class="space-y-6">
-                    <p class="opacity-80">Maximize value of items in a knapsack with capacity $W$.</p>
+                <div class="space-y-10">
+                    
+                    <!-- 1. PROBLEM SETUP -->
+                    <div class="bg-blue-900/20 border-l-4 border-blue-500 p-6 rounded-xl">
+                        <h4 class="font-bold text-blue-300 text-lg mb-2">The Goal</h4>
+                        <p class="text-sm opacity-90">
+                            Maximize the total <strong>Value</strong> of items in a knapsack with <strong>Capacity $W = 10$</strong>.
+                        </p>
+                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white/5 p-4 rounded">
-                            <h5 class="font-bold text-accent mb-2">Branching</h5>
-                            <p class="text-sm">For each item, we have 2 choices:</p>
-                            <ul class="list-disc pl-5 text-sm">
-                                <li>Take item.</li>
-                                <li>Leave item.</li>
-                            </ul>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Data Table -->
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <h5 class="font-bold text-accent mb-4 text-center">Item List (Sorted by Ratio)</h5>
+                            <table class="w-full text-center text-sm font-mono border-collapse">
+                                <thead>
+                                    <tr class="bg-white/10 text-white text-xs uppercase">
+                                        <th class="p-2 border-b border-white/20">Item</th>
+                                        <th class="p-2 border-b border-white/20">Weight</th>
+                                        <th class="p-2 border-b border-white/20">Value</th>
+                                        <th class="p-2 border-b border-white/20 text-yellow-400">Ratio ($/kg)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="hover:bg-white/5"><td class="p-2 font-bold">1</td><td class="p-2">4</td><td class="p-2">$40</td><td class="p-2 font-bold text-yellow-400">10</td></tr>
+                                    <tr class="hover:bg-white/5"><td class="p-2 font-bold">2</td><td class="p-2">7</td><td class="p-2">$42</td><td class="p-2 font-bold text-yellow-400">6</td></tr>
+                                    <tr class="hover:bg-white/5"><td class="p-2 font-bold">3</td><td class="p-2">5</td><td class="p-2">$25</td><td class="p-2 font-bold text-yellow-400">5</td></tr>
+                                    <tr class="hover:bg-white/5"><td class="p-2 font-bold">4</td><td class="p-2">3</td><td class="p-2">$12</td><td class="p-2 font-bold text-yellow-400">4</td></tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="bg-white/5 p-4 rounded">
-                            <h5 class="font-bold text-accent mb-2">Bounding</h5>
-                            <p class="text-sm">
-                                Upper Bound = Current Value + (Remaining Capacity × Best Ratio of remaining items).
+
+                        <!-- Formula -->
+                        <div class="bg-black/30 p-6 rounded-xl border border-white/10 flex flex-col justify-center">
+                            <h5 class="font-bold text-white mb-2">The Bounding Function (Upper Bound)</h5>
+                            <p class="text-sm opacity-80 mb-4">
+                                We want to estimate the <em>maximum possible value</em> a branch could yield. We assume we can fill the remaining empty space with the <strong>best available item type</strong> (fractionally).
                             </p>
+                            <div class="bg-white/10 p-3 rounded font-mono text-xs text-center border border-dashed border-white/30">
+                                UB = Current Value + (Rem. Capacity × Best Remaining Ratio)
+                            </div>
                         </div>
                     </div>
+
+                    <!-- 2. STATE SPACE TREE -->
+                    <div class="bg-white/5 p-6 rounded-xl border border-white/10 flex flex-col items-center">
+                        <h4 class="font-bold text-accent mb-4">State Space Tree (Best-First Search)</h4>
+                        
+                        <div class="relative w-full h-[600px] bg-white rounded-lg overflow-hidden border border-gray-300 flex justify-center p-4">
+                            <svg width="800" height="580" viewBox="0 0 800 580">
+                                <defs>
+                                    <marker id="arrow-knap-clean" markerWidth="10" markerHeight="7" refX="28" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                                    </marker>
+                                </defs>
+
+                                <!-- NODE 0 (ROOT) -->
+                                <g transform="translate(400, 30)">
+                                    <rect x="-50" y="0" width="100" height="50" fill="white" stroke="black" stroke-width="1.5" rx="5"/>
+                                    <text x="0" y="18" text-anchor="middle" font-size="11">w=0, v=0</text>
+                                    <text x="0" y="38" text-anchor="middle" font-size="12" font-weight="bold">UB = 100</text>
+                                    <text x="0" y="-5" text-anchor="middle" font-size="10" font-weight="bold">Root</text>
+                                </g>
+
+                                <!-- Level 1: Item 1 -->
+                                
+                                <!-- Left Branch (With 1) -->
+                                <line x1="380" y1="50" x2="200" y2="130" stroke="black" stroke-width="1.5" />
+                                <rect x="250" y="75" width="40" height="16" rx="3" fill="white" stroke="#ccc"/>
+                                <text x="270" y="87" text-anchor="middle" font-size="9" fill="black">with 1</text>
+                                
+                                <!-- Node 1 (Best) -->
+                                <g transform="translate(200, 130)">
+                                    <rect x="-50" y="0" width="100" height="50" fill="#dcfce7" stroke="black" stroke-width="2" rx="5"/>
+                                    <text x="0" y="18" text-anchor="middle" font-size="11">w=4, v=40</text>
+                                    <text x="0" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">UB = 76</text>
+                                    <text x="-60" y="25" text-anchor="end" font-size="10" fill="#666">Node 1</text>
+                                </g>
+
+                                <!-- Right Branch (Without 1) -->
+                                <line x1="420" y1="50" x2="600" y2="130" stroke="black" stroke-width="1.5" />
+                                <rect x="510" y="75" width="40" height="16" rx="3" fill="white" stroke="#ccc"/>
+                                <text x="530" y="87" text-anchor="middle" font-size="9" fill="black">w/o 1</text>
+                                
+                                <!-- Node 2 -->
+                                <g transform="translate(600, 130)">
+                                    <rect x="-50" y="0" width="100" height="50" fill="white" stroke="black" stroke-width="1.5" rx="5"/>
+                                    <text x="0" y="18" text-anchor="middle" font-size="11">w=0, v=0</text>
+                                    <text x="0" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#666">UB = 60</text>
+                                    <text x="60" y="25" text-anchor="start" font-size="10" fill="#666">Node 2</text>
+                                </g>
+
+
+                                <!-- Level 2: Item 2 (From Node 1) -->
+
+                                <!-- Left Branch (With 2) - Infeasible -->
+                                <line x1="180" y1="180" x2="100" y2="260" stroke="black" stroke-width="1.5" />
+                                <text x="120" y="210" text-anchor="middle" font-size="9" fill="black" transform="rotate(-30 120 210)">with 2</text>
+
+                                <!-- Node 3 -->
+                                <g transform="translate(100, 260)">
+                                    <rect x="-40" y="0" width="80" height="30" fill="#fee2e2" stroke="black" stroke-width="1.5" rx="5"/>
+                                    <text x="0" y="20" text-anchor="middle" font-size="11" font-weight="bold">w=11</text>
+                                    <text x="0" y="45" text-anchor="middle" font-size="12" font-weight="bold" fill="red">X (Over)</text>
+                                </g>
+
+                                <!-- Right Branch (Without 2) -->
+                                <line x1="220" y1="180" x2="300" y2="260" stroke="black" stroke-width="1.5" />
+                                <text x="280" y="210" text-anchor="middle" font-size="9" fill="black" transform="rotate(30 280 210)">w/o 2</text>
+                                
+                                <!-- Node 4 -->
+                                <g transform="translate(300, 260)">
+                                    <rect x="-50" y="0" width="100" height="50" fill="#dcfce7" stroke="black" stroke-width="2" rx="5"/>
+                                    <text x="0" y="18" text-anchor="middle" font-size="11">w=4, v=40</text>
+                                    <text x="0" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">UB = 70</text>
+                                    <text x="-60" y="25" text-anchor="end" font-size="10" fill="#666">Node 4</text>
+                                </g>
+
+
+                                <!-- Level 3: Item 3 (From Node 4) -->
+
+                                <!-- Left Branch (With 3) -->
+                                <line x1="280" y1="310" x2="200" y2="390" stroke="black" stroke-width="1.5" />
+                                <text x="220" y="340" text-anchor="middle" font-size="9" fill="black" transform="rotate(-30 220 340)">with 3</text>
+                                
+                                <!-- Node 5 -->
+                                <g transform="translate(200, 390)">
+                                    <rect x="-50" y="0" width="100" height="50" fill="#dcfce7" stroke="black" stroke-width="2" rx="5"/>
+                                    <text x="0" y="18" text-anchor="middle" font-size="11">w=9, v=65</text>
+                                    <text x="0" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">UB = 69</text>
+                                    <text x="-60" y="25" text-anchor="end" font-size="10" fill="#666">Node 5</text>
+                                </g>
+
+                                <!-- Right Branch (Without 3) -->
+                                <line x1="320" y1="310" x2="400" y2="390" stroke="black" stroke-width="1.5" />
+                                <text x="380" y="340" text-anchor="middle" font-size="9" fill="black" transform="rotate(30 380 340)">w/o 3</text>
+
+                                <!-- Node 6 -->
+                                <g transform="translate(400, 390)">
+                                    <rect x="-50" y="0" width="100" height="50" fill="white" stroke="black" stroke-width="1.5" rx="5"/>
+                                    <text x="0" y="18" text-anchor="middle" font-size="11">w=4, v=40</text>
+                                    <text x="0" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#666">UB = 64</text>
+                                    <text x="60" y="25" text-anchor="start" font-size="10" fill="#666">Node 6</text>
+                                </g>
+
+
+                                <!-- Level 4: Item 4 (From Node 5) -->
+
+                                <!-- Left Branch (With 4) - Infeasible -->
+                                <line x1="180" y1="440" x2="140" y2="500" stroke="black" stroke-width="1.5" />
+                                <text x="145" y="465" text-anchor="middle" font-size="9" fill="black">with 4</text>
+                                <g transform="translate(140, 500)">
+                                    <rect x="-40" y="0" width="80" height="30" fill="#fee2e2" stroke="black" stroke-width="1.5" rx="5"/>
+                                    <text x="0" y="20" text-anchor="middle" font-size="11" font-weight="bold">w=12 (X)</text>
+                                </g>
+
+                                <!-- Right Branch (Without 4) - SOLUTION -->
+                                <line x1="220" y1="440" x2="260" y2="500" stroke="black" stroke-width="1.5" />
+                                <text x="255" y="465" text-anchor="middle" font-size="9" fill="black">w/o 4</text>
+
+                                <!-- Node 7 (Solution) -->
+                                <g transform="translate(260, 500)">
+                                    <rect x="-50" y="0" width="100" height="50" fill="#22c55e" stroke="black" stroke-width="2" rx="5"/>
+                                    <text x="0" y="18" text-anchor="middle" font-size="11" fill="white" font-weight="bold">w=9, v=65</text>
+                                    <text x="0" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="white">UB = 65</text>
+                                </g>
+                                <text x="360" y="530" text-anchor="middle" font-weight="bold" fill="#16a34a" font-size="14">← OPTIMAL SOLUTION</text>
+
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- 3. DETAILED CALCULATIONS (ALL NODES) -->
+    <div class="space-y-6">
+        <h4 class="font-bold text-white text-lg border-b border-white/10 pb-2">Step-by-Step Calculations</h4>
+
+        <!-- LEVEL 1 -->
+        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+            <h5 class="font-bold text-blue-300 mb-3 text-sm uppercase tracking-wider">Level 1: Decide Item 1 ($w=4, v=40, r=10$)</h5>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Node 1 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-green-500">
+                    <div class="flex justify-between text-sm font-bold text-green-400 mb-1">
+                        <span>Node 1 (Take Item 1)</span>
+                        <span>UB = 76</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current: $v=40, w=4$</li>
+                        <li>Rem Cap: $10 - 4 = 6$</li>
+                        <li>Best Rem: Item 2 ($r=6$)</li>
+                        <li>Calc: $40 + (6 \\times 6) = 76$</li>
+                    </ul>
+                </div>
+
+                <!-- Node 2 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-gray-500">
+                    <div class="flex justify-between text-sm font-bold text-gray-400 mb-1">
+                        <span>Node 2 (Skip Item 1)</span>
+                        <span>UB = 60</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current: $v=0, w=0$</li>
+                        <li>Rem Cap: 10</li>
+                        <li>Best Rem: Item 2 ($r=6$)</li>
+                        <li>Calc: $0 + (10 \\times 6) = 60$</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-xs text-center mt-2 text-white/50">Decision: 76 > 60. Expand Node 1.</p>
+        </div>
+
+        <!-- LEVEL 2 -->
+        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+            <h5 class="font-bold text-blue-300 mb-3 text-sm uppercase tracking-wider">Level 2: Decide Item 2 ($w=7, v=42, r=6$)</h5>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Node 3 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-red-500">
+                    <div class="flex justify-between text-sm font-bold text-red-400 mb-1">
+                        <span>Node 3 (Take Item 2)</span>
+                        <span>Infeasible</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current $w$: $4 (from Node 1)$</li>
+                        <li>Add Item 2: $4 + 7 = 11$</li>
+                        <li>$11 > 10$ (Max Capacity)</li>
+                        <li><strong>PRUNE</strong></li>
+                    </ul>
+                </div>
+
+                <!-- Node 4 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-green-500">
+                    <div class="flex justify-between text-sm font-bold text-green-400 mb-1">
+                        <span>Node 4 (Skip Item 2)</span>
+                        <span>UB = 70</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current: $v=40, w=4$</li>
+                        <li>Rem Cap: 6</li>
+                        <li>Best Rem: Item 3 ($r=5$)</li>
+                        <li>Calc: $40 + (6 \\times 5) = 70$</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-xs text-center mt-2 text-white/50">Decision: Node 4 is valid and promising. Expand Node 4.</p>
+        </div>
+
+        <!-- LEVEL 3 -->
+        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+            <h5 class="font-bold text-blue-300 mb-3 text-sm uppercase tracking-wider">Level 3: Decide Item 3 ($w=5, v=25, r=5$)</h5>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Node 5 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-green-500">
+                    <div class="flex justify-between text-sm font-bold text-green-400 mb-1">
+                        <span>Node 5 (Take Item 3)</span>
+                        <span>UB = 69</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current: $v = 40+25 = 65$, $w = 4+5 = 9$</li>
+                        <li>Rem Cap: $10 - 9 = 1$</li>
+                        <li>Best Rem: Item 4 ($r=4$)</li>
+                        <li>Calc: $65 + (1 \\times 4) = 69$</li>
+                    </ul>
+                </div>
+
+                <!-- Node 6 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-gray-500">
+                    <div class="flex justify-between text-sm font-bold text-gray-400 mb-1">
+                        <span>Node 6 (Skip Item 3)</span>
+                        <span>UB = 64</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current: $v=40, w=4$</li>
+                        <li>Rem Cap: 6</li>
+                        <li>Best Rem: Item 4 ($r=4$)</li>
+                        <li>Calc: $40 + (6 \\times 4) = 64$</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-xs text-center mt-2 text-white/50">Decision: 69 > 64. Expand Node 5.</p>
+        </div>
+
+        <!-- LEVEL 4 -->
+        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+            <h5 class="font-bold text-blue-300 mb-3 text-sm uppercase tracking-wider">Level 4: Decide Item 4 ($w=3, v=12, r=4$)</h5>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Node 7 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-red-500">
+                    <div class="flex justify-between text-sm font-bold text-red-400 mb-1">
+                        <span>With Item 4</span>
+                        <span>Infeasible</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current $w$: 9</li>
+                        <li>Add Item 4: $9 + 3 = 12$</li>
+                        <li>$12 > 10$ (Max Capacity)</li>
+                    </ul>
+                </div>
+
+                <!-- Node 8 -->
+                <div class="bg-black/30 p-3 rounded border-l-2 border-green-500 bg-green-900/10">
+                    <div class="flex justify-between text-sm font-bold text-green-400 mb-1">
+                        <span>Without Item 4</span>
+                        <span>SOLUTION</span>
+                    </div>
+                    <ul class="text-xs space-y-1 font-mono opacity-80">
+                        <li>Current: $v=65, w=9$</li>
+                        <li>No items left.</li>
+                        <li>Final Value: <strong>65</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+                </div>
+            `
+        },
+
+        'cop-summary': {
+            title: 'Summary & Limitations',
+            html: `
+                <div class="space-y-8">
                     
-                    <p class="text-xs text-center opacity-60">We prioritize exploring nodes with the <strong>Highest Upper Bound</strong> (Best-First Search).</p>
+                    <!-- LIMITATIONS -->
+                    <div class="bg-red-900/20 border-l-4 border-red-500 p-6 rounded-xl">
+                        <h4 class="font-bold text-red-400 text-lg mb-2">The Reality Check</h4>
+                        <ul class="list-disc pl-5 text-sm space-y-2 opacity-90">
+                            <li><strong>Unpredictable:</strong> These problems <em>may</em> be solvable in reasonable time, but it is impossible to predict for a specific instance. Worst case is still exponential.</li>
+                            <li><strong>Bounding Difficulty:</strong> Formulating a strong bounding function (like we did for Knapsack/TSP) is a non-trivial task. If the bound is weak, the tree doesn't get pruned enough.</li>
+                        </ul>
+                    </div>
+
+                    <!-- COMPARISON TABLE -->
+                    <div class="bg-white/5 p-6 rounded-xl border border-white/10">
+                        <h4 class="font-bold text-white mb-4 text-center">Backtracking vs. Branch-and-Bound</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            <!-- Backtracking -->
+                            <div class="text-center">
+                                <h5 class="text-blue-400 font-bold text-lg mb-2">Backtracking</h5>
+                                <div class="text-sm opacity-80 space-y-2">
+                                    <p>Uses <strong>Depth-First Search</strong>.</p>
+                                    <p>Prunes when a path becomes <strong>Infeasible</strong> (breaks rules).</p>
+                                    <p>Used for Combinatorial Problems (e.g., N-Queens).</p>
+                                </div>
+                            </div>
+
+                            <!-- Branch and Bound -->
+                            <div class="text-center border-l border-white/10">
+                                <h5 class="text-yellow-400 font-bold text-lg mb-2">Branch-and-Bound</h5>
+                                <div class="text-sm opacity-80 space-y-2">
+                                    <p>Can use any search order (often <strong>Best-First</strong>).</p>
+                                    <p>Prunes when a path is <strong>Sub-Optimal</strong> (worse than best found).</p>
+                                    <p>Used for Optimization Problems (e.g., TSP, Knapsack).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FINAL CONCLUSION -->
+                    <div class="bg-green-900/20 p-4 rounded text-center border border-green-500/30">
+                        <p class="text-sm text-green-300 font-bold">
+                            Both techniques try to avoid Brute Force by pruning the problem's tree, making intractable problems solvable for moderate sizes.
+                        </p>
+                    </div>
+
                 </div>
             `
         }
